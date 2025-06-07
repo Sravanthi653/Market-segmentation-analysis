@@ -1,0 +1,30 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Example: if your cluster assignments are in cl12_3
+# Make sure it's a Series or column in the DataFrame
+ausActivDesc['cluster'] = cl12_3  # Add cluster labels to data
+
+# Select columns starting with "book"
+book_cols = [col for col in ausActivDesc.columns if col.startswith('book')]
+
+# Melt the data into long format
+df_melted = ausActivDesc.melt(id_vars='cluster', value_vars=book_cols, 
+                              var_name='Activity', value_name='Value')
+
+# Group by cluster and activity, then compute proportions (mean of binary columns)
+proportions = df_melted.groupby(['cluster', 'Activity'])['Value'].mean().reset_index()
+
+# Convert to percentage
+proportions['Value'] = proportions['Value'] * 100
+
+# Plot
+plt.figure(figsize=(10, 6))
+sns.barplot(data=proportions, x='Value', y='Activity', hue='cluster', orient='h')
+
+plt.xlabel("Percent")
+plt.xlim(-2, 102)
+plt.title("Proportion of 'book*' Activities by Cluster")
+plt.tight_layout()
+plt.show()
