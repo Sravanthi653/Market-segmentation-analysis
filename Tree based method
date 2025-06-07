@@ -1,0 +1,22 @@
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+import matplotlib.pyplot as plt
+
+# 1. Load your data from CSV file
+vacmotdesc = pd.read_csv('vacmotdesc.csv')  # Change path if needed
+
+# 2. Drop rows with missing values
+data = vacmotdesc.dropna()
+
+# 3. Define features (X) and target (y)
+X = data.drop(columns=['C6'])  # All columns except 'C6'
+y = data['C6']                 # Target variable
+
+# 4. Fit a decision tree classifier
+tree_model = DecisionTreeClassifier(criterion='entropy', random_state=42)
+tree_model.fit(X, y)
+
+# 5. Plot the decision tree
+plt.figure(figsize=(20, 10))
+plot_tree(tree_model, feature_names=X.columns, class_names=[str(c) for c in tree_model.classes_], filled=True)
+plt.show()
