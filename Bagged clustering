@@ -1,0 +1,27 @@
+import numpy as np
+import pandas as pd
+from sklearn.cluster import KMeans
+from sklearn.utils import resample
+
+# Set seed for reproducibility
+np.random.seed(1234)
+
+# Replace this with your actual dataset
+# Example dummy data:
+# winterActiv = pd.read_csv("your_data.csv")
+winterActiv = pd.DataFrame(np.random.rand(100, 5))  # Simulated data
+
+# Parameters
+base_k = 10
+base_iter = 50
+committee_members = []
+
+# Bagging loop
+for i in range(base_iter):
+    sample = resample(winterActiv, replace=True)
+    kmeans = KMeans(n_clusters=base_k, n_init=10, random_state=1234)
+    kmeans.fit(sample)
+    committee_members.append(kmeans)
+
+print("Committee Member:")
+print(list(range(1, base_iter + 1)))
