@@ -1,0 +1,54 @@
+import numpy as np
+import pandas as pd
+from sklearn.cluster import KMeans
+from sklearn.metrics import adjusted_rand_score
+from sklearn.utils import resample
+
+# Example dataset: Replace with your own
+# PF3 = pd.read_csv('your_data.csv')
+PF3 = pd.DataFrame(np.random.rand(200, 6))  # Example dummy data
+
+# Set random seed
+np.random.seed(1234)
+
+# Parameters
+k_range = range(2, 10)  # from 2 to 9
+nrep = 10
+
+# Store Rand Index statistics
+summary = {}
+
+for k in k_range:
+    rand_indices = []
+    for i in range(nrep):
+        # Bootstrap sample
+        sample = resample(PF3, replace=True, random_state=i)
+
+        # Original clustering on full data
+        kmeans_full = KMeans(n_clusters=k, n_init=10, random_state=42)
+        labels_full = kmeans_full.fit_predict(PF3)
+
+        # Clustering on bootstrap sample
+        kmeans_sample = KMeans(n_clusters=k, n_init=10, random_state=42)
+        labels_sample = kmeans_sample.fit_predict(sample)
+
+        # Align lengths by using only indices from bootstrap
+        aligned_labels = labels_full[sample.index]
+
+        # Rand Index between original and resampled
+        rand_score = adjusted_rand_score(aligned_labels, labels_sample)
+        rand_indices.append(rand_score)
+
+    # Store summary stats
+    summary[k] = {
+        'Min': round(np.min(rand_indices), 2),
+        '1st_Qu.': round(np.percentile(rand_indices, 25), 2),
+        'Median': round(np.median(rand_indices), 2),
+        'Mean': round(np.mean(rand_indices), 2),
+        '3rd_Qu.': round(np.percentile(rand_indices, 75), 2),
+        'Max': round(np.max(rand_indices), 2)
+    }
+
+# Convert to DataFrame and display
+summary_df = pd.DataFrame(summary).T
+print(summary_df)
