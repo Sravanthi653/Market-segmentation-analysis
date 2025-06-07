@@ -1,0 +1,28 @@
+# Import necessary libraries
+import pandas as pd
+
+# Assume vac is your existing DataFrame
+# Example dummy DataFrame
+data = {'Income2': ['>120k', '<30k', '60-90k', '30-60k', '90-120k', '60-90k']}
+vac = pd.DataFrame(data)
+
+# Copy the 'Income2' column
+inc2 = vac['Income2'].copy()
+
+# Check current unique levels
+print("Original levels:", inc2.unique())
+
+# Define correct logical order for income levels
+correct_order = ['<30k', '30-60k', '60-90k', '90-120k', '>120k']
+
+# Convert to ordered categorical type
+inc2 = pd.Categorical(inc2, categories=correct_order, ordered=True)
+
+# Assign back to the DataFrame
+vac['Income2_ordered'] = inc2
+
+# Optional: sort based on the ordered column
+vac = vac.sort_values('Income2_ordered')
+
+# Show the final DataFrame
+print(vac)
