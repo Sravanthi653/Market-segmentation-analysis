@@ -1,0 +1,47 @@
+# Step 1: Import required libraries
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+
+# Step 2: Simulate the binary travel motives dataset (like R example)
+np.random.seed(123)
+vacmot = pd.DataFrame(
+    np.random.binomial(1, 0.5, size=(200, 20)),
+    columns=[f'Motiv_{i+1}' for i in range(20)]
+)
+
+# Step 3: Perform PCA (centered, not scaled – same as R's prcomp with scale.=FALSE)
+pca = PCA()
+vacmot_pca = pca.fit_transform(vacmot)
+
+# Step 4: View summary of PCA
+explained_var = pca.explained_variance_ratio_
+cumulative_var = np.cumsum(explained_var)
+
+# Print variance explained by each PC
+print("Explained Variance Ratio:\n", explained_var.round(3))
+print("Cumulative Variance:\n", cumulative_var.round(3))
+
+# Step 5: Print PCA components (rotation matrix / loadings)
+print("\nPCA Loadings (Rotation Matrix):")
+loadings = pd.DataFrame(pca.components_.T, columns=[f'PC{i+1}' for i in range(20)], index=vacmot.columns)
+print(loadings.round(3))
+
+# Step 6: Plot PC2 vs PC3
+plt.figure(figsize=(8, 6))
+plt.scatter(vacmot_pca[:, 1], vacmot_pca[:, 2], color='gray', alpha=0.7)
+plt.xlabel('PC2')
+plt.ylabel('PC3')
+plt.title('Perceptual Map (PC2 vs PC3)')
+
+# Step 7: Add arrows for variable loadings on PC2 and PC3
+for i, var in enumerate(vacmot.columns):
+    plt.arrow(0, 0, loadings.iloc[i, 1]*2, loadings.iloc[i, 2]*2, color='red', alpha=0.5)
+    plt.text(loadings.iloc[i, 1]*2.2, loadings.iloc[i, 2]*2.2, var, color='black', fontsize=8)
+
+plt.grid(True)
+plt.axhline(0, color='black', linewidth=0.5)
+plt.axvline(0, color='black', linewidth=0.5)
+plt.tight_layout()
+plt.show()
