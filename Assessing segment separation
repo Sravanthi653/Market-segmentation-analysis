@@ -1,0 +1,59 @@
+import numpy as np
+import pandas as pd
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+import seaborn as sns
+from matplotlib.patches import Ellipse
+
+# Step 1: Simulate binary data (like vacmot)
+np.random.seed(123)
+vacmot = pd.DataFrame(
+    np.random.binomial(1, 0.5, size=(200, 20)),
+    columns=[f'Motiv_{i+1}' for i in range(20)]
+)
+
+# Step 2: PCA
+pca = PCA()
+vacmot_pca = pca.fit_transform(vacmot)
+
+# Step 3: KMeans clustering with k=6
+kmeans = KMeans(n_clusters=6, n_init=10, random_state=42)
+labels = kmeans.fit_predict(vacmot)
+
+# Step 4: Plot principal components 2 and 3 (Python indices 1 and 2)
+pc_x = 1  # PC2
+pc_y = 2  # PC3
+
+plt.figure(figsize=(10, 6))
+palette = sns.color_palette("pastel", 6)
+sns.scatterplot(
+    x=vacmot_pca[:, pc_x], y=vacmot_pca[:, pc_y],
+    hue=labels, palette=palette, legend='full', s=50, edgecolor='k'
+)
+
+# Optional: draw ellipses around clusters
+for i in range(6):
+    cluster_points = vacmot_pca[labels == i]
+    if cluster_points.shape[0] > 1:
+        cov = np.cov(cluster_points[:, [pc_x, pc_y]].T)
+        mean = cluster_points[:, [pc_x, pc_y]].mean(axis=0)
+        vals, vecs = np.linalg.eigh(cov)
+        angle = np.degrees(np.arctan2(*vecs[:, 1][::-1]))
+        width, height = 2 * np.sqrt(vals)
+        ellipse = Ellipse(xy=mean, width=width, height=height, angle=angle,
+                          edgecolor='black', fc='none', lw=1.5)
+        plt.gca().add_patch(ellipse)
+
+# Plot PCA axes (vectors of features)
+for i, (x, y) in enumerate(zip(pca.components_[pc_x], pca.components_[pc_y])):
+    plt.arrow(0, 0, x * 5, y * 5, color='darkblue', alpha=0.5, head_width=0.05)
+    plt.text(x * 5 * 1.1, y * 5 * 1.1, vacmot.columns[i], color='darkblue', fontsize=9)
+
+plt.xlabel("Principal Component 2")
+plt.ylabel("Principal Component 3")
+plt.title("PCA Projection with KMeans Clusters (k=6)")
+plt.grid(True)
+plt.legend(title='Cluster')
+plt.tight_layout()
+plt.show()
