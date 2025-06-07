@@ -1,0 +1,22 @@
+import pandas as pd
+from statsmodels.graphics.mosaicplot import mosaic
+import matplotlib.pyplot as plt
+
+# Create a DataFrame if not already available
+# ausActivDesc = pd.read_csv('your_data.csv')  # if needed
+# cl12_3 = ...  # your cluster labels
+
+# Add cluster labels as a new column
+ausActivDesc['cluster'] = cl12_3
+
+# Create a contingency table
+ct = pd.crosstab(ausActivDesc['cluster'], ausActivDesc['TV.channel'])
+
+# Plot mosaic
+plt.figure(figsize=(10, 6))
+mosaic(ct.stack(), title='', gap=0.01)
+plt.xticks(rotation=90)
+plt.xlabel('')
+plt.ylabel('')
+plt.tight_layout()
+plt.show()
