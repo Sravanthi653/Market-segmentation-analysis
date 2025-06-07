@@ -1,0 +1,31 @@
+import pandas as pd
+from scipy.spatial.distance import pdist, squareform
+import numpy as np
+
+# Sample data simulating the 'annabill' dataset
+# Replace this with actual values if available
+data = {
+    "Anna":    [1, 2, 3],
+    "Bill":    [4, 5, 6],
+    "Frank":   [4, 5, 6],
+    "Julia":   [3, 4, 5],
+    "Maria":   [2, 3, 4],
+    "Michael": [9, 9, 9],
+    "Tom":     [4, 5, 6]
+}
+
+# Create a DataFrame with individuals as rows
+annabill = pd.DataFrame(data).T  # transpose to match R's row-wise individuals
+
+# Compute Euclidean distance matrix
+dist_matrix = pdist(annabill.values, metric='euclidean')
+
+# Convert to square matrix
+dist_df = pd.DataFrame(squareform(dist_matrix), 
+                       index=annabill.index, 
+                       columns=annabill.index)
+
+# Round to 2 decimal places
+dist_df = dist_df.round(2)
+
+print(dist_df)
