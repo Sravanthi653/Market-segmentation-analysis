@@ -1,0 +1,28 @@
+import numpy as np
+import pandas as pd
+
+# Example: Number of rows (n)
+n = 2000  # Adjust based on your actual data
+
+# Example probabilities for two binary variables
+# Replace with actual values
+p = {
+    'alpine_skiing': 0.55,
+    'sight_seeing': 0.65
+}
+
+# Define the expected function (mimicking R's outer product)
+def expected(p):
+    res = np.outer([1 - p['alpine_skiing'], p['alpine_skiing']],
+                   [1 - p['sight_seeing'], p['sight_seeing']])
+    return pd.DataFrame(
+        res,
+        index=['alpine_skiing_0', 'alpine_skiing_1'],
+        columns=['sight_seeing_0', 'sight_seeing_1']
+    )
+
+# Compute expected frequency table
+expected_counts = np.round(n * expected(p))
+
+# Display the result
+print(expected_counts)
