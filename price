@@ -1,0 +1,18 @@
+import numpy as np
+import pandas as pd
+
+# Example: ausActiv is a DataFrame
+# ausActiv = pd.read_csv("ausActiv.csv")
+
+# Example: bcn is a list of dicts with 'Rows' key
+# bcn = [{'Rows': [1, 5, 7]}, {'Rows': [0, 2, 3]}, ...]
+
+# Initialize empty cluster labels
+cl12 = np.full(len(ausActiv), np.nan)
+
+# Assign cluster numbers
+for k, cluster in enumerate(bcn, start=1):  # start=1 to match R (1-based index)
+    cl12[cluster['Rows']] = k
+
+# Optional: add to DataFrame
+ausActiv['cluster'] = cl12
