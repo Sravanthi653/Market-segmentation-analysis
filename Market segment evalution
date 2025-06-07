@@ -1,0 +1,36 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Example data (replace with your real x, y, weights, and labels)
+x = np.array([60, 75, 90])       # e.g., "Effectiveness"
+y = np.array([40, 80, 50])       # e.g., "Cost"
+wx = 0.6                         # weight for x
+wy = 0.4                         # weight for y
+labels = ['Option A', 'Option B', 'Option C']
+size = 300                      # Size of points in plot
+
+# Normalize and combine using weighted sum
+score = wx * x + wy * y
+
+# Create DataFrame for plotting
+df = pd.DataFrame({
+    'Option': labels,
+    'x': x,
+    'y': y,
+    'Score': score
+})
+
+# Plot
+plt.figure(figsize=(8, 6))
+scatter = plt.scatter(df['x'], df['y'], s=size, c=df['Score'], cmap='viridis', alpha=0.8)
+for i, row in df.iterrows():
+    plt.text(row['x'] + 1, row['y'] + 1, row['Option'], fontsize=10)
+
+plt.xlabel('Criterion X (weighted {:.1f})'.format(wx))
+plt.ylabel('Criterion Y (weighted {:.1f})'.format(wy))
+plt.title('Decision Matrix')
+plt.colorbar(scatter, label='Combined Score')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
